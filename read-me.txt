@@ -4,3 +4,7 @@
 3. Material UI
 4. Router DOM
 5. Layout
+6. Components Implimentation
+7. Validation
+8. Backend REST API (Implimentation)
+9. Axios Middleware

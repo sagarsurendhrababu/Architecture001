@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 
 import {Box, Container, TextField, Button} from '@mui/material';
 
+//axios middleware
+import axiosinterceptor from '../api/axiosInterceptor';
+
+//importing formvalidation function
+import userFormValidation from '../utilities/userFormValidation';
+
 function Dashboard() {
 
     const [name,setName] = useState('');
@@ -9,34 +15,22 @@ function Dashboard() {
     const [place,setPlace] = useState('');
     const [error,setError] = useState({});
 
-    const handleSubmitForm = (e) => {
+    const handleSubmitForm = async (e) => {
         e.preventDefault();
-
-        const formData = {name, email, place};
-        const errorValidation = {}
-
-        if(formData.name.trim() === ""){
-            errorValidation.name = "Name is required";
-        }else if(formData.name.length < 3){
-            errorValidation.name = "Name must be at least 3 characters";
-        }
-
-        if(formData.email.trim() === ""){
-            errorValidation.email = "Email is required";
-        }
-        if(formData.place.trim() === ""){
-            errorValidation.place = "Place is required";
-        }
-
-        setError(errorValidation)   
-
-        if(Object.keys(errorValidation).length === 0){
-            //submit form
-            console.log("Form submitted", formData);
-            //clear form
-            setName('');
-            setEmail('');
-            setPlace('');
+        try{
+            const {errorValidation, formData} = userFormValidation(name, email, place);
+            setError(errorValidation)   
+            if(Object.keys(errorValidation).length === 0){
+                //submit form
+                const response = await axiosinterceptor.post('/api/users', formData);
+                console.log('Form submitted successfully:', response.data);
+                //clear form
+                setName('');
+                setEmail('');
+                setPlace('');
+            }            
+        }catch(err){
+            console.log('Error submitting form:', err);
         }
     }
 
