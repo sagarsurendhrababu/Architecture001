@@ -8,10 +8,10 @@ const appTheme = createTheme({
     },
     secondary: {
         main: "#2da05d",
+        light: "#fff5e7",
     },
     background: {
-        default: "#f5f5f5",
-        paper: "#ffffff",
+        default: "#ffffff",
     },
     text: {
         primary: "#000000",

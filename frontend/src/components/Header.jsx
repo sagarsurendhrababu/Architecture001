@@ -13,11 +13,11 @@ function Header() {
             </Grid>
             <Grid size={{xs:6, md:10}} sx={{justifyContent: {xs: "flex-end", md: "flex-end"}}} display="flex" alignItems="center" >
                 <Box gap={2} display="flex" >
-                  <Button component={Link} to="/" variant='contained' sx={{bgcolor: "secondary.main"}}>Home</Button>
+                  <Button component={Link} to="/" variant="contained" sx={{bgcolor: "secondary.main"}}>Home</Button>
                   <Button component={Link} to="/login" variant='contained' sx={{bgcolor: "secondary.main"}}>Login</Button>
                 </Box>
             </Grid>
-        </Grid>
+        </Grid> 
     </Box>
   )
 }
