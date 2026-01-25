@@ -8,6 +8,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import appTheme from './theme/appTheme.js';
 //importing BrowserRouter
 import { BrowserRouter } from 'react-router-dom';
+//Redux Provide
+import { Provider } from 'react-redux';
+import store from './redux/store.js';
 
 import App from './App.jsx'
 
@@ -16,7 +19,9 @@ createRoot(document.getElementById('root')).render(
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
       <BrowserRouter>
-        <App />
+        <Provider store={store}>
+          <App />
+        </Provider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,

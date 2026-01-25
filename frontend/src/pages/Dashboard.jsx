@@ -7,6 +7,9 @@ import axiosinterceptor from '../api/axiosInterceptor';
 
 //importing formvalidation function
 import userFormValidation from '../utilities/userFormValidation';
+//Redux imports
+import { useDispatch, useSelector } from 'react-redux';
+import { setUsers } from '../redux/features/userSlice';
 
 function Dashboard() {
 
@@ -14,6 +17,9 @@ function Dashboard() {
     const [email,setEmail] = useState('');
     const [place,setPlace] = useState('');
     const [error,setError] = useState({});
+
+    const userData = useSelector(state => state.users.users);    
+    const dispatch = useDispatch();
 
     const handleSubmitForm = async (e) => {
         e.preventDefault();
@@ -23,7 +29,7 @@ function Dashboard() {
             if(Object.keys(errorValidation).length === 0){
                 //submit form
                 const response = await axiosinterceptor.post('/api/users', formData);
-                console.log('Form submitted successfully:', response.data);
+                dispatch(setUsers(response.data));
                 //clear form
                 setName('');
                 setEmail('');
@@ -58,6 +64,14 @@ function Dashboard() {
                 }}/>                    
                 <Button type='submit' sx={{flex:1}} variant="contained" color="primary">Add</Button>                     
             </Box>
+            {/* listing area */}
+            {userData && userData.map((user, index) => (
+                <Box key={index} mt={2} p={2} borderRadius={2} sx={{bgcolor: "primary.light", border:"1px solid #aec4c5"}}>
+                    <Box><strong>Name:</strong> {user.name}</Box>
+                    <Box><strong>Email:</strong> {user.email}</Box>
+                    <Box><strong>Place:</strong> {user.place}</Box>
+                </Box>
+            ))}
         </Container>
     </Box>
   )
