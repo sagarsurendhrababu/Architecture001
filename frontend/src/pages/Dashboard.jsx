@@ -1,47 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {Box, Container, TextField, Button} from '@mui/material';
-
-//axios middleware
-import axiosinterceptor from '../api/axiosInterceptor';
 
 //importing formvalidation function
 import userFormValidation from '../utilities/userFormValidation';
 //Redux imports
 import { useDispatch, useSelector } from 'react-redux';
-import { setUsers } from '../redux/features/userSlice';
+import {createUserStart, fetchUserStart,  updateUserStart, deleteUserStart,  
+} from '../redux/features/userSlice';
 
 function Dashboard() {
 
-    const [name,setName] = useState('');
+    const [name,setName]   = useState('');
     const [email,setEmail] = useState('');
     const [place,setPlace] = useState('');
     const [error,setError] = useState({});
 
-    const userData = useSelector(state => state.users.users);    
+    const userData = useSelector(state => state.users.users); 
+    const loading = useSelector(state => state.users.load);   
+    const errorState = useSelector(state => state.users.error);
     const dispatch = useDispatch();
-
-    const handleSubmitForm = async (e) => {
+    
+    //creating user data
+    const handleSubmitForm = (e) => {
         e.preventDefault();
-        try{
-            const {errorValidation, formData} = userFormValidation(name, email, place);
-            setError(errorValidation)   
+        const {errorValidation, formData} = userFormValidation(name, email, place);
+        setError(errorValidation) 
             if(Object.keys(errorValidation).length === 0){
-                //submit form
-                const response = await axiosinterceptor.post('/api/users', formData);
-                dispatch(setUsers(response.data));
-                //clear form
-                setName('');
-                setEmail('');
-                setPlace('');
-            }            
-        }catch(err){
-            console.log('Error submitting form:', err);
-        }
+            dispatch(createUserStart(formData));               
+            setName(''); setEmail(''); setPlace('');
+        }            
     }
 
+    //fetching user data
+    useEffect(() => {
+      dispatch(fetchUserStart());
+    }, [dispatch]);
+
   return (
-    <Box width="100%" height="90vh">
+    <Box width="100%" minHeight="90vh" pb={3}>
         <Container maxWidth="xl">
             <Box component="form" onSubmit={handleSubmitForm} borderRadius={2} sx={{bgcolor: "secondary.light", border:"1px solid #ecd1bf"}} p={2} mt={2} display="flex" gap={2}>
                 <TextField value={name} error={!!error.name} helperText={error.name} label="Name"  sx={{flex:1}} onChange={e => {
@@ -62,14 +59,16 @@ function Dashboard() {
                         setError(prev => ({...prev, place: null}))
                     }
                 }}/>                    
-                <Button type='submit' sx={{flex:1}} variant="contained" color="primary">Add</Button>                     
+                <Button type='submit' sx={{flex:1}} variant="contained" color="primary">{ loading ? "Saving.." : "Save"}</Button>                     
             </Box>
-            {/* listing area */}
+            {loading && <Box mt={2}>Loading...</Box>}
+            {errorState && <Box mt={2} color="error.main">{errorState}</Box>}
             {userData && userData.map((user, index) => (
                 <Box key={index} mt={2} p={2} borderRadius={2} sx={{bgcolor: "primary.light", border:"1px solid #aec4c5"}}>
                     <Box><strong>Name:</strong> {user.name}</Box>
                     <Box><strong>Email:</strong> {user.email}</Box>
                     <Box><strong>Place:</strong> {user.place}</Box>
+                    <Button onClick={() => dispatch(deleteUserStart(user._id))} variant="contained" color="error">delete</Button>
                 </Box>
             ))}
         </Container>

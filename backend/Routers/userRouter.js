@@ -6,7 +6,7 @@ const userModel = require('../Models/userModel');
 // Get all users
 router.get('/api/users',  async (req, res) => {
     try{
-        const users = await userModel.find({});
+        const users = await userModel.find({}).sort({_id:-1});
         res.json(users);
     }catch(error){
         res.status(500).send('Server Error');
