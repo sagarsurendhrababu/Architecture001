@@ -8,9 +8,10 @@ import {fetchUserStart, fetchUsersSuccess, fetchUserFailure,
  } from '../features/userSlice';
 
 
-function* fetchUsersSaga() {
+function* fetchUsersSaga(action) {
     try {
-       const response =  yield call(axiosInterceptor.get, '/api/users');
+       const response =  yield call(axiosInterceptor.get, `/api/users?page=${action.payload.page}&limit=${action.payload.limit}`);
+       console.log(response.data);
        yield put(fetchUsersSuccess(response.data));
     }catch(err){
         yield put(fetchUserFailure(err.message));

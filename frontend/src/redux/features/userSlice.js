@@ -4,6 +4,7 @@ const userReducer = createSlice({
     name: 'user',
     initialState:{
         users:[],
+        totalUsers:0,
         load:false,
         error:null
     },
@@ -26,7 +27,8 @@ const userReducer = createSlice({
         },
         fetchUsersSuccess:(state, action) => {
             state.load = false
-            state.users = action.payload;
+            state.users = action.payload.users;
+            state.totalUsers = action.payload.totalUsers;
         },
         fetchUserFailure:(state, action) => {
             state.load = false;
@@ -59,7 +61,7 @@ const userReducer = createSlice({
             state.error = action.payload;
         }
     }
-});
+});  
 
 export const {createUserStart,createUserSuccess,createUserFailure,
     fetchUserStart, fetchUsersSuccess, fetchUserFailure,

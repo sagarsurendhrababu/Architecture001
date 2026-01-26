@@ -15,11 +15,16 @@ function Dashboard() {
     const [email,setEmail] = useState('');
     const [place,setPlace] = useState('');
     const [error,setError] = useState({});
+    const [page,setPage]   = useState(1);
+    const limit = 10;
 
     const userData = useSelector(state => state.users.users); 
+    const totalUsers = useSelector(state => state.users.totalUsers);
     const loading = useSelector(state => state.users.load);   
     const errorState = useSelector(state => state.users.error);
     const dispatch = useDispatch();
+
+    const totalPages = Math.ceil(totalUsers / limit);
     
     //creating user data
     const handleSubmitForm = (e) => {
@@ -33,9 +38,9 @@ function Dashboard() {
     }
 
     //fetching user data
-    useEffect(() => {
-      dispatch(fetchUserStart());
-    }, [dispatch]);
+    useEffect(() => {        
+      dispatch(fetchUserStart({page, limit}));
+    }, [dispatch, page]);
 
   return (
     <Box width="100%" minHeight="90vh" pb={3}>
@@ -64,13 +69,21 @@ function Dashboard() {
             {loading && <Box mt={2}>Loading...</Box>}
             {errorState && <Box mt={2} color="error.main">{errorState}</Box>}
             {userData && userData.map((user, index) => (
-                <Box key={index} mt={2} p={2} borderRadius={2} sx={{bgcolor: "primary.light", border:"1px solid #aec4c5"}}>
+                <Box key={index} mt={2} p={2} borderRadius={2} sx={{bgcolor: "primary.light", border:"1px solid #aec4c5", display:"flex", justifyContent:"space-between", alignItems:"center"
+                }}>
                     <Box><strong>Name:</strong> {user.name}</Box>
                     <Box><strong>Email:</strong> {user.email}</Box>
                     <Box><strong>Place:</strong> {user.place}</Box>
                     <Button onClick={() => dispatch(deleteUserStart(user._id))} variant="contained" color="error">delete</Button>
                 </Box>
             ))}
+
+            <Box display="flex" justifyContent="center" mt={3}>
+                {totalPages > 0 && [...Array(totalPages)].map((_,index) => (
+                    <Button key={index} sx={{mx:0.5}} variant={page === index+1 ? "contained" : "outlined"} onClick={() => setPage(index+1)}>{index+1}</Button>
+                ))}
+            </Box>
+            
         </Container>
     </Box>
   )

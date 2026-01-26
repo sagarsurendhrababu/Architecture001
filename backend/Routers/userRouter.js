@@ -5,9 +5,11 @@ const userModel = require('../Models/userModel');
 
 // Get all users
 router.get('/api/users',  async (req, res) => {
+    const {page,limit} = req.query;
     try{
-        const users = await userModel.find({}).sort({_id:-1});
-        res.json(users);
+        const users = await userModel.find({}).sort({_id:-1}).skip((page-1)*limit).limit(limit);
+        const totalUsers = await userModel.countDocuments();
+        res.json({users, totalUsers});
     }catch(error){
         res.status(500).send('Server Error');
     }
