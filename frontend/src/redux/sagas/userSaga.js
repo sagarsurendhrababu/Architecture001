@@ -39,11 +39,14 @@ function* deleteUserSaga(action) {
 
         //pagination Number code
         const {page,users,limit} = yield select (state => state.users);        
+        // refetching user data after deletion
+        
         if(users.length === 0 && page > 1){
             yield put(setPage(page - 1));
-        }
-        // refetching user data after deletion
-        yield put(fetchUserStart({page, limit})); 
+            yield put(fetchUserStart({page, limit})); 
+        }else{
+            yield put(fetchUserStart({page, limit})); 
+        }        
 
     }catch(err){
         yield call(deleteUserFailure(err.message));
