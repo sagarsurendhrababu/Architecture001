@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 
 import {Box, Container, TextField, Button} from '@mui/material';
 
@@ -6,8 +6,9 @@ import {Box, Container, TextField, Button} from '@mui/material';
 import userFormValidation from '../utilities/userFormValidation';
 //Redux imports
 import { useDispatch, useSelector } from 'react-redux';
-import {createUserStart, fetchUserStart,  updateUserStart, deleteUserStart,  
-} from '../redux/features/userSlice';
+import {createUserStart, fetchUserStart,  deleteUserStart, setPage } from '../redux/features/userSlice';
+//import skeleton
+import SkeletonArea from '../customHooks/SkeletonArea.jsx';
 
 function Dashboard() {
 
@@ -15,16 +16,18 @@ function Dashboard() {
     const [email,setEmail] = useState('');
     const [place,setPlace] = useState('');
     const [error,setError] = useState({});
-    const [page,setPage]   = useState(1);
-    const limit = 10;
 
-    const userData = useSelector(state => state.users.users); 
-    const totalUsers = useSelector(state => state.users.totalUsers);
-    const loading = useSelector(state => state.users.load);   
-    const errorState = useSelector(state => state.users.error);
-    const dispatch = useDispatch();
+    const userData      = useSelector(state => state.users.users);
+    const countUsers    = useSelector(state => state.users.totalUsers); 
+    const limit         = useSelector(state => state.users.limit); 
+    const page          = useSelector(state => state.users.page); 
+    const loading       = useSelector(state => state.users.load);   
+    const errorState    = useSelector(state => state.users.error);
+    const dispatch      = useDispatch();
 
-    const totalPages = Math.ceil(totalUsers / limit);
+    const totalPage = useMemo(() => {
+        return Math.ceil(countUsers / limit);
+    }, [countUsers, limit]); 
     
     //creating user data
     const handleSubmitForm = (e) => {
@@ -39,8 +42,8 @@ function Dashboard() {
 
     //fetching user data
     useEffect(() => {        
-      dispatch(fetchUserStart({page, limit}));
-    }, [dispatch, page]);
+      dispatch(fetchUserStart({page,limit}));
+    }, [dispatch,page,limit]);
 
   return (
     <Box width="100%" minHeight="90vh" pb={3}>
@@ -66,8 +69,10 @@ function Dashboard() {
                 }}/>                    
                 <Button type='submit' sx={{flex:1}} variant="contained" color="primary">{ loading ? "Saving.." : "Save"}</Button>                     
             </Box>
-            {loading && <Box mt={2}>Loading...</Box>}
+
+            {loading && <SkeletonArea/>}
             {errorState && <Box mt={2} color="error.main">{errorState}</Box>}
+            
             {userData && userData.map((user, index) => (
                 <Box key={index} mt={2} p={2} borderRadius={2} sx={{bgcolor: "primary.light", border:"1px solid #aec4c5", display:"flex", justifyContent:"space-between", alignItems:"center"
                 }}>
@@ -78,12 +83,14 @@ function Dashboard() {
                 </Box>
             ))}
 
-            <Box display="flex" justifyContent="center" mt={3}>
-                {totalPages > 0 && [...Array(totalPages)].map((_,index) => (
-                    <Button key={index} sx={{mx:0.5}} variant={page === index+1 ? "contained" : "outlined"} onClick={() => setPage(index+1)}>{index+1}</Button>
+            <Box sx={{my:2, display:"flex", gap:1, justifyContent:"center", flexWrap:"wrap"}}>
+                {totalPage > 0 && [...Array(totalPage)].map((_, index) => (
+                    <Button key={index} onClick={() => dispatch(setPage(index + 1))} variant={page === index + 1 ? "contained" : "outlined"} color="primary">
+                        {index + 1}
+                    </Button>
                 ))}
             </Box>
-            
+
         </Container>
     </Box>
   )

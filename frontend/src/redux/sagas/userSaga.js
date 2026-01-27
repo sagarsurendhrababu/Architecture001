@@ -1,17 +1,16 @@
-import {call, put, takeLatest} from 'redux-saga/effects';
+import {call, put, takeLatest, select} from 'redux-saga/effects';
 
 import axiosInterceptor from '../../api/axiosInterceptor.js';
 
 import {fetchUserStart, fetchUsersSuccess, fetchUserFailure,
     createUserStart, createUserSuccess, createUserFailure ,
-    deleteUserStart, deleteUserSuccess, deleteUserFailure,
+    deleteUserStart, deleteUserSuccess, deleteUserFailure, setPage   
  } from '../features/userSlice';
 
 
 function* fetchUsersSaga(action) {
     try {
        const response =  yield call(axiosInterceptor.get, `/api/users?page=${action.payload.page}&limit=${action.payload.limit}`);
-       console.log(response.data);
        yield put(fetchUsersSuccess(response.data));
     }catch(err){
         yield put(fetchUserFailure(err.message));
@@ -22,6 +21,9 @@ function* createuserSaga(action) {
     try{
        const response =  yield call(axiosInterceptor.post, '/api/users', action.payload);
         yield put(createUserSuccess(response.data));
+        const {limit} = yield select (state => state.users);    
+         yield put(fetchUserStart({page:1, limit})); 
+         yield put(setPage(1));
     }catch(err){
         yield call(createUserFailure(err.message));
     }
@@ -29,8 +31,20 @@ function* createuserSaga(action) {
 
 function* deleteUserSaga(action) {
     try{
+        //remove item from database
        yield call(axiosInterceptor.delete, `/api/users/${action.payload}`);
+
+        //removed item from user store
         yield put(deleteUserSuccess(action.payload));
+
+        //pagination Number code
+        const {page,users,limit} = yield select (state => state.users);        
+        if(users.length === 0 && page > 1){
+            yield put(setPage(page - 1));
+        }
+        // refetching user data after deletion
+        yield put(fetchUserStart({page, limit})); 
+
     }catch(err){
         yield call(deleteUserFailure(err.message));
     }
