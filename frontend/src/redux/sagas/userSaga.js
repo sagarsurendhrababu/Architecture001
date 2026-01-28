@@ -4,13 +4,14 @@ import axiosInterceptor from '../../api/axiosInterceptor.js';
 
 import {fetchUserStart, fetchUsersSuccess, fetchUserFailure,
     createUserStart, createUserSuccess, createUserFailure ,
-    deleteUserStart, deleteUserSuccess, deleteUserFailure, setPage   
+    deleteUserStart, deleteUserSuccess, deleteUserFailure, setPage,   
  } from '../features/userSlice';
 
 
-function* fetchUsersSaga(action) {
+function* fetchUsersSaga() {
+    const {page, limit, filter} = yield select (state => state.users);
     try {
-       const response =  yield call(axiosInterceptor.get, `/api/users?page=${action.payload.page}&limit=${action.payload.limit}`);
+       const response =  yield call(axiosInterceptor.get, `/api/users?page=${page}&limit=${limit}&filter=${filter}`);
        yield put(fetchUsersSuccess(response.data));
     }catch(err){
         yield put(fetchUserFailure(err.message));

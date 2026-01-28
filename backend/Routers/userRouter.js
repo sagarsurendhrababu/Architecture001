@@ -4,14 +4,31 @@ const router = express.Router();
 const userModel = require('../Models/userModel');
 
 // Get all users
-router.get('/api/users',  async (req, res) => {
-    const {page,limit} = req.query;
-    try{
-        const users = await userModel.find({}).sort({_id:-1}).skip((page-1)*limit).limit(limit);
-        const totalUsers = await userModel.countDocuments();
-        res.json({users, totalUsers});
-    }catch(error){
-        res.status(500).send('Server Error');
+router.get('/api/users', async (req, res) => {
+    const { page, limit, filter } = req.query;
+    try {
+        const Searchfilter = filter
+            ? {
+                $or: [
+                    { name: { $regex: filter, $options: 'i' } },
+                    { email: { $regex: filter, $options: 'i' } },
+                    { place: { $regex: filter, $options: 'i' } }
+                ]
+            }
+            : {};
+      
+        const users = await userModel
+            .find(Searchfilter)
+            .sort({ _id: -1 })
+            .skip((page - 1) * limit)
+            .limit(Number(limit));
+
+        const totalUsers = await userModel.countDocuments(Searchfilter);
+
+        res.json({ users, totalUsers });
+
+    } catch (error) {
+        res.status(400).json({ message: 'Server Error' });
     }
 });
 

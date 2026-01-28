@@ -10,4 +10,5 @@ function SkeletonArea() {
   )
 }
 
+
 export default SkeletonArea;

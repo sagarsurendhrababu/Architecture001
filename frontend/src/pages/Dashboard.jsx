@@ -19,8 +19,9 @@ function Dashboard() {
 
     const userData      = useSelector(state => state.users.users);
     const countUsers    = useSelector(state => state.users.totalUsers); 
-    const limit         = useSelector(state => state.users.limit); 
-    const page          = useSelector(state => state.users.page); 
+    const limit         = useSelector(state => state.users.limit);
+    const filter        = useSelector(state => state.users.filter);        
+    const page          = useSelector(state => state.users.page);
     const loading       = useSelector(state => state.users.load);   
     const errorState    = useSelector(state => state.users.error);
     const dispatch      = useDispatch();
@@ -42,8 +43,8 @@ function Dashboard() {
 
     //fetching user data
     useEffect(() => {        
-      dispatch(fetchUserStart({page,limit}));
-    }, [dispatch,page,limit]);
+      dispatch(fetchUserStart(filter));
+    }, [dispatch, filter, page]);
 
   return (
     <Box width="100%" minHeight="90vh" pb={3}>
