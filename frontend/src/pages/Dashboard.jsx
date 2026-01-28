@@ -43,7 +43,7 @@ function Dashboard() {
 
     //fetching user data
     useEffect(() => {        
-      dispatch(fetchUserStart(filter));
+      dispatch(fetchUserStart());
     }, [dispatch, filter, page]);
 
   return (

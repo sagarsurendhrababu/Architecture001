@@ -32,15 +32,10 @@ function* createuserSaga(action) {
 
 function* deleteUserSaga(action) {
     try{
-        //remove item from database
-       yield call(axiosInterceptor.delete, `/api/users/${action.payload}`);
 
-        //removed item from user store
+        yield call(axiosInterceptor.delete, `/api/users/${action.payload}`);
         yield put(deleteUserSuccess(action.payload));
-
-        //pagination Number code
         const {page,users,limit} = yield select (state => state.users);        
-        // refetching user data after deletion
         
         if(users.length === 0 && page > 1){
             yield put(setPage(page - 1));

@@ -7,7 +7,7 @@ const userModel = require('../Models/userModel');
 router.get('/api/users', async (req, res) => {
     const { page, limit, filter } = req.query;
     try {
-        const Searchfilter = filter
+        const filterResult = filter
             ? {
                 $or: [
                     { name: { $regex: filter, $options: 'i' } },
@@ -18,17 +18,15 @@ router.get('/api/users', async (req, res) => {
             : {};
       
         const users = await userModel
-            .find(Searchfilter)
+            .find(filterResult)
             .sort({ _id: -1 })
             .skip((page - 1) * limit)
             .limit(Number(limit));
 
-        const totalUsers = await userModel.countDocuments(Searchfilter);
-
-        res.json({ users, totalUsers });
-
+        const totalUsers = await userModel.countDocuments(filterResult);
+        res.status(200).json({ users, totalUsers });
     } catch (error) {
-        res.status(400).json({ message: 'Server Error' });
+        res.status(500).json({ message: 'Server Error' });
     }
 });
 

@@ -4,17 +4,11 @@ import {Box,Grid, Typography, Button, TextField} from '@mui/material';
 //link from router dom
 import {Link} from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { fetchUserStart, setFilter } from '../redux/features/userSlice.js';
+import { setFilter, setPage } from '../redux/features/userSlice.js';
 
 function Header() {
 
   const dispatch = useDispatch();
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    dispatch(setFilter(e.target.value));
-    dispatch(fetchUserStart());    
-  }
 
   return (
     <Box width="100%" height="60px" bgcolor="primary.main">
@@ -23,8 +17,11 @@ function Header() {
               <Typography variant='h2'>Logo</Typography>
             </Grid>
             <Grid size={{xs:4, md:5}} display="flex" alignItems="center" justifyContent="center">
-              <Box onChange={handleSearch} component="form" width="100%" display="flex" justifyContent="center">
-                <TextField fullWidth placeholder="Search..."></TextField>
+              <Box width="100%" display="flex" justifyContent="center">
+                <TextField onChange={(e) =>  {
+                  dispatch(setFilter(e.target.value));
+                  dispatch(setPage(1));
+                }} fullWidth placeholder="Search..."></TextField>
               </Box>
             </Grid>
             <Grid size={{xs:4, md:5}} sx={{justifyContent: {xs: "flex-end", md: "flex-end"}}} display="flex" alignItems="center" >
