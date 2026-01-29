@@ -1,14 +1,23 @@
-import React from 'react';
-
+import React,{useState,useEffect} from 'react';
 import {Box,Grid, Typography, Button, TextField} from '@mui/material';
 //link from router dom
 import {Link} from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setFilter, setPage } from '../redux/features/userSlice.js';
+import { setFilter} from '../redux/features/userSlice.js';
+
+import useDebounce from '../customHooks/useDebounce.jsx';
 
 function Header() {
 
   const dispatch = useDispatch();
+  
+  const [search,setSearch] = useState("");
+
+  const debouncedSearch = useDebounce(search, 500);
+
+useEffect(() => {
+    dispatch(setFilter(debouncedSearch));
+  }, [debouncedSearch, dispatch]);
 
   return (
     <Box width="100%" height="60px" bgcolor="primary.main">
@@ -19,8 +28,7 @@ function Header() {
             <Grid size={{xs:4, md:5}} display="flex" alignItems="center" justifyContent="center">
               <Box width="100%" display="flex" justifyContent="center">
                 <TextField onChange={(e) =>  {
-                  dispatch(setFilter(e.target.value));
-                  dispatch(setPage(1));
+                  setSearch(e.target.value);
                 }} fullWidth placeholder="Search..."></TextField>
               </Box>
             </Grid>

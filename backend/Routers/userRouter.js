@@ -16,7 +16,7 @@ router.get('/api/users', async (req, res) => {
                 ]
             }
             : {};
-      
+                  
         const users = await userModel
             .find(filterResult)
             .sort({ _id: -1 })

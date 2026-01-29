@@ -50,24 +50,28 @@ function Dashboard() {
     <Box width="100%" minHeight="90vh" pb={3}>
         <Container maxWidth="xl">
             <Box component="form" onSubmit={handleSubmitForm} borderRadius={2} sx={{bgcolor: "secondary.light", border:"1px solid #ecd1bf"}} p={2} mt={2} display="flex" gap={2}>
+                
                 <TextField value={name} error={!!error.name} helperText={error.name} label="Name"  sx={{flex:1}} onChange={e => {
                     setName(e.target.value)
                     if(e.target.value.length >=3 ){
                         setError(prev => ({...prev, name: null}))
                     }
                 }}/>
+
                 <TextField value={email} error={!!error.email} helperText={error.email} label="Email" sx={{flex:1}} onChange={e => {
                     setEmail(e.target.value)
                     if(error.email){
                         setError(prev => ({...prev, email: null}))
                     }
                 }}/>
+
                 <TextField value={place} error={!!error.place} helperText={error.place} label="Place" sx={{flex:1}} onChange={e => {
                     setPlace(e.target.value)
                     if(error.place){
                         setError(prev => ({...prev, place: null}))
                     }
-                }}/>                    
+                }}/>   
+
                 <Button type='submit' sx={{flex:1}} variant="contained" color="primary">{ loading ? "Saving.." : "Save"}</Button>                     
             </Box>
 

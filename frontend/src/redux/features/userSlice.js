@@ -6,10 +6,10 @@ const userReducer = createSlice({
         users:[],
         totalUsers:0,
         filter:'',
-        limit:3,
+        limit:5,
         page:1,
         load:false,
-        error:null
+        error:null,
     },
     reducers:{
         createUserStart:(state) => {
@@ -44,7 +44,7 @@ const userReducer = createSlice({
         updateUserSuccess:(state, action) => {
             state.load = false
             state.users = state.users.map(user => 
-                user.id === action.payload.id ? {...user, ...action.payload} : user
+                user._id === action.payload._id ? {...user, ...action.payload} : user
             );
         },
         updateUserFailure:(state, action) => {
@@ -68,6 +68,7 @@ const userReducer = createSlice({
         },
         setFilter: (state, action) => {  
             state.filter = action.payload;
+            state.page = 1;
         }
     }    
 });  
